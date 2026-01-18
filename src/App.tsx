@@ -3,24 +3,37 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Index from "./pages/Index";
+import { AuthProvider } from "@/hooks/useAuth";
+import { AppLayout } from "@/components/layout/AppLayout";
+import Home from "./pages/Home";
+import Screener from "./pages/Screener";
+import SupplyChain from "./pages/SupplyChain";
+import Portfolio from "./pages/Portfolio";
+import Settings from "./pages/Settings";
+import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
+    <AuthProvider>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <Routes>
+            <Route path="/auth" element={<Auth />} />
+            <Route path="/" element={<AppLayout><Home /></AppLayout>} />
+            <Route path="/screener" element={<AppLayout><Screener /></AppLayout>} />
+            <Route path="/supply-chain" element={<AppLayout><SupplyChain /></AppLayout>} />
+            <Route path="/portfolio" element={<AppLayout><Portfolio /></AppLayout>} />
+            <Route path="/settings" element={<AppLayout><Settings /></AppLayout>} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </TooltipProvider>
+    </AuthProvider>
   </QueryClientProvider>
 );
 

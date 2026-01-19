@@ -10,6 +10,9 @@ import Screener from "./pages/Screener";
 import SupplyChain from "./pages/SupplyChain";
 import Portfolio from "./pages/Portfolio";
 import Settings from "./pages/Settings";
+import Signals from "./pages/Signals";
+import PrivateBets from "./pages/PrivateBets";
+import WhaleTracker from "./pages/WhaleTracker";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 
@@ -29,6 +32,9 @@ const App = () => (
             <Route path="/supply-chain" element={<AppLayout><SupplyChain /></AppLayout>} />
             <Route path="/portfolio" element={<AppLayout><Portfolio /></AppLayout>} />
             <Route path="/settings" element={<AppLayout><Settings /></AppLayout>} />
+            <Route path="/signals" element={<AppLayout><Signals /></AppLayout>} />
+            <Route path="/signals/private-bets" element={<AppLayout><PrivateBets /></AppLayout>} />
+            <Route path="/signals/whale-tracker" element={<AppLayout><WhaleTracker /></AppLayout>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

@@ -180,4 +180,27 @@
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
+
+  /* Safe area padding for mobile bottom nav */
+  .safe-area-pb {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  .safe-area-bottom-nav {
+    padding-bottom: calc(4rem + env(safe-area-inset-bottom, 0px));
+  }
+
+  /* Fixed bottom CTA that clears bottom nav on mobile */
+  .fixed-bottom-cta {
+    bottom: calc(4rem + env(safe-area-inset-bottom, 0px) + 0.5rem);
+  }
+
+  @media (min-width: 768px) {
+    .fixed-bottom-cta {
+      bottom: 1rem;
+    }
+    .safe-area-bottom-nav {
+      padding-bottom: 0;
+    }
+  }
 }

@@ -14,6 +14,189 @@ export type Database = {
   }
   public: {
     Tables: {
+      brokerage_connections: {
+        Row: {
+          connection_type: string
+          created_at: string
+          error_message: string | null
+          id: string
+          institution_id: string | null
+          institution_name: string
+          last_synced_at: string | null
+          plaid_access_token: string | null
+          plaid_item_id: string | null
+          status: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          connection_type?: string
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          institution_id?: string | null
+          institution_name: string
+          last_synced_at?: string | null
+          plaid_access_token?: string | null
+          plaid_item_id?: string | null
+          status?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          connection_type?: string
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          institution_id?: string | null
+          institution_name?: string
+          last_synced_at?: string | null
+          plaid_access_token?: string | null
+          plaid_item_id?: string | null
+          status?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      brokerage_holdings: {
+        Row: {
+          asset_type: string | null
+          connection_id: string | null
+          cost_basis_per_share: number | null
+          created_at: string
+          current_price: number | null
+          current_value: number | null
+          id: string
+          is_crypto: boolean | null
+          last_updated: string | null
+          name: string | null
+          quantity: number
+          stock_id: string | null
+          ticker: string
+          unrealized_pl: number | null
+          unrealized_pl_percent: number | null
+          user_id: string
+        }
+        Insert: {
+          asset_type?: string | null
+          connection_id?: string | null
+          cost_basis_per_share?: number | null
+          created_at?: string
+          current_price?: number | null
+          current_value?: number | null
+          id?: string
+          is_crypto?: boolean | null
+          last_updated?: string | null
+          name?: string | null
+          quantity?: number
+          stock_id?: string | null
+          ticker: string
+          unrealized_pl?: number | null
+          unrealized_pl_percent?: number | null
+          user_id: string
+        }
+        Update: {
+          asset_type?: string | null
+          connection_id?: string | null
+          cost_basis_per_share?: number | null
+          created_at?: string
+          current_price?: number | null
+          current_value?: number | null
+          id?: string
+          is_crypto?: boolean | null
+          last_updated?: string | null
+          name?: string | null
+          quantity?: number
+          stock_id?: string | null
+          ticker?: string
+          unrealized_pl?: number | null
+          unrealized_pl_percent?: number | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "brokerage_holdings_connection_id_fkey"
+            columns: ["connection_id"]
+            isOneToOne: false
+            referencedRelation: "brokerage_connections"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "brokerage_holdings_stock_id_fkey"
+            columns: ["stock_id"]
+            isOneToOne: false
+            referencedRelation: "stocks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      brokerage_transactions: {
+        Row: {
+          connection_id: string | null
+          created_at: string
+          fees: number | null
+          holding_id: string | null
+          id: string
+          notes: string | null
+          price_per_share: number | null
+          quantity: number
+          settlement_date: string | null
+          ticker: string
+          total_amount: number | null
+          transaction_date: string
+          transaction_type: string
+          user_id: string
+        }
+        Insert: {
+          connection_id?: string | null
+          created_at?: string
+          fees?: number | null
+          holding_id?: string | null
+          id?: string
+          notes?: string | null
+          price_per_share?: number | null
+          quantity: number
+          settlement_date?: string | null
+          ticker: string
+          total_amount?: number | null
+          transaction_date: string
+          transaction_type: string
+          user_id: string
+        }
+        Update: {
+          connection_id?: string | null
+          created_at?: string
+          fees?: number | null
+          holding_id?: string | null
+          id?: string
+          notes?: string | null
+          price_per_share?: number | null
+          quantity?: number
+          settlement_date?: string | null
+          ticker?: string
+          total_amount?: number | null
+          transaction_date?: string
+          transaction_type?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "brokerage_transactions_connection_id_fkey"
+            columns: ["connection_id"]
+            isOneToOne: false
+            referencedRelation: "brokerage_connections"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "brokerage_transactions_holding_id_fkey"
+            columns: ["holding_id"]
+            isOneToOne: false
+            referencedRelation: "brokerage_holdings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       portfolio_holdings: {
         Row: {
           added_at: string
@@ -98,6 +281,66 @@ export type Database = {
         }
         Relationships: []
       }
+      private_bets: {
+        Row: {
+          company_name: string
+          confidence: string | null
+          created_at: string
+          description: string | null
+          evidence_urls: string[] | null
+          funding_stage: string | null
+          headquarters: string | null
+          id: string
+          key_investors: string[] | null
+          last_funding_amount: number | null
+          last_funding_date: string | null
+          notes: string | null
+          status: string | null
+          tech_category: string
+          thesis: string | null
+          updated_at: string
+          website_url: string | null
+        }
+        Insert: {
+          company_name: string
+          confidence?: string | null
+          created_at?: string
+          description?: string | null
+          evidence_urls?: string[] | null
+          funding_stage?: string | null
+          headquarters?: string | null
+          id?: string
+          key_investors?: string[] | null
+          last_funding_amount?: number | null
+          last_funding_date?: string | null
+          notes?: string | null
+          status?: string | null
+          tech_category: string
+          thesis?: string | null
+          updated_at?: string
+          website_url?: string | null
+        }
+        Update: {
+          company_name?: string
+          confidence?: string | null
+          created_at?: string
+          description?: string | null
+          evidence_urls?: string[] | null
+          funding_stage?: string | null
+          headquarters?: string | null
+          id?: string
+          key_investors?: string[] | null
+          last_funding_amount?: number | null
+          last_funding_date?: string | null
+          notes?: string | null
+          status?: string | null
+          tech_category?: string
+          thesis?: string | null
+          updated_at?: string
+          website_url?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -127,6 +370,57 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      public_proxies: {
+        Row: {
+          created_at: string
+          exposure_category: string | null
+          exposure_strength: number | null
+          id: string
+          notes: string | null
+          private_bet_id: string
+          relationship_type: string
+          stock_id: string
+          thesis: string | null
+        }
+        Insert: {
+          created_at?: string
+          exposure_category?: string | null
+          exposure_strength?: number | null
+          id?: string
+          notes?: string | null
+          private_bet_id: string
+          relationship_type: string
+          stock_id: string
+          thesis?: string | null
+        }
+        Update: {
+          created_at?: string
+          exposure_category?: string | null
+          exposure_strength?: number | null
+          id?: string
+          notes?: string | null
+          private_bet_id?: string
+          relationship_type?: string
+          stock_id?: string
+          thesis?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "public_proxies_private_bet_id_fkey"
+            columns: ["private_bet_id"]
+            isOneToOne: false
+            referencedRelation: "private_bets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "public_proxies_stock_id_fkey"
+            columns: ["stock_id"]
+            isOneToOne: false
+            referencedRelation: "stocks"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       saved_filters: {
         Row: {
@@ -535,6 +829,33 @@ export type Database = {
         }
         Relationships: []
       }
+      user_signal_preferences: {
+        Row: {
+          created_at: string
+          enable_whale_signal_boost: boolean | null
+          id: string
+          tracked_filer_ids: string[] | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          enable_whale_signal_boost?: boolean | null
+          id?: string
+          tracked_filer_ids?: string[] | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          enable_whale_signal_boost?: boolean | null
+          id?: string
+          tracked_filer_ids?: string[] | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       valuation_thresholds: {
         Row: {
           created_at: string
@@ -657,6 +978,120 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      whale_filers: {
+        Row: {
+          aum_billions: number | null
+          cik: string | null
+          created_at: string
+          description: string | null
+          filing_manager_name: string | null
+          focus_areas: string[] | null
+          id: string
+          is_active: boolean | null
+          last_filing_date: string | null
+          name: string
+          updated_at: string
+          website_url: string | null
+        }
+        Insert: {
+          aum_billions?: number | null
+          cik?: string | null
+          created_at?: string
+          description?: string | null
+          filing_manager_name?: string | null
+          focus_areas?: string[] | null
+          id?: string
+          is_active?: boolean | null
+          last_filing_date?: string | null
+          name: string
+          updated_at?: string
+          website_url?: string | null
+        }
+        Update: {
+          aum_billions?: number | null
+          cik?: string | null
+          created_at?: string
+          description?: string | null
+          filing_manager_name?: string | null
+          focus_areas?: string[] | null
+          id?: string
+          is_active?: boolean | null
+          last_filing_date?: string | null
+          name?: string
+          updated_at?: string
+          website_url?: string | null
+        }
+        Relationships: []
+      }
+      whale_holdings: {
+        Row: {
+          change_type: string | null
+          company_name: string | null
+          created_at: string
+          filer_id: string
+          filing_date: string | null
+          filing_quarter: string | null
+          id: string
+          percent_of_portfolio: number | null
+          report_date: string | null
+          shares: number
+          shares_change: number | null
+          stock_id: string | null
+          ticker: string
+          value_change: number | null
+          value_usd: number
+        }
+        Insert: {
+          change_type?: string | null
+          company_name?: string | null
+          created_at?: string
+          filer_id: string
+          filing_date?: string | null
+          filing_quarter?: string | null
+          id?: string
+          percent_of_portfolio?: number | null
+          report_date?: string | null
+          shares?: number
+          shares_change?: number | null
+          stock_id?: string | null
+          ticker: string
+          value_change?: number | null
+          value_usd?: number
+        }
+        Update: {
+          change_type?: string | null
+          company_name?: string | null
+          created_at?: string
+          filer_id?: string
+          filing_date?: string | null
+          filing_quarter?: string | null
+          id?: string
+          percent_of_portfolio?: number | null
+          report_date?: string | null
+          shares?: number
+          shares_change?: number | null
+          stock_id?: string | null
+          ticker?: string
+          value_change?: number | null
+          value_usd?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "whale_holdings_filer_id_fkey"
+            columns: ["filer_id"]
+            isOneToOne: false
+            referencedRelation: "whale_filers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "whale_holdings_stock_id_fkey"
+            columns: ["stock_id"]
+            isOneToOne: false
+            referencedRelation: "stocks"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {

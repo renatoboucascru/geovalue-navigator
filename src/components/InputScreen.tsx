@@ -44,7 +44,7 @@ export const InputScreen: React.FC = () => {
         </div>
       </div>
       
-      <div className="max-w-2xl mx-auto p-4 space-y-8 pb-32">
+      <div className="max-w-2xl mx-auto p-4 space-y-8 pb-40 md:pb-32">
         {/* Investment Amount */}
         <motion.section
           initial={{ opacity: 0, y: 20 }}
@@ -276,8 +276,8 @@ export const InputScreen: React.FC = () => {
         </motion.section>
       </div>
       
-      {/* Fixed Bottom Button */}
-      <div className="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-background via-background to-transparent">
+      {/* Fixed Bottom Button - positioned above mobile nav */}
+      <div className="fixed left-0 right-0 p-4 bg-gradient-to-t from-background via-background to-transparent fixed-bottom-cta md:bottom-0">
         <div className="max-w-2xl mx-auto">
           <motion.button
             onClick={runScreener}

@@ -29,8 +29,13 @@ interface AppLayoutProps {
 const navItems = [
   { path: '/', label: 'Home', icon: Home },
   { path: '/screener', label: 'Screener', icon: Search },
-  { path: '/supply-chain', label: 'Supply Chain', icon: GitFork },
+  { path: '/signals', label: 'Signals', icon: Bell },
+  { path: '/supply-chain', label: 'Supply', icon: GitFork },
   { path: '/portfolio', label: 'Portfolio', icon: Briefcase },
+];
+
+const sidebarNavItems = [
+  ...navItems,
   { path: '/settings', label: 'Settings', icon: Settings },
 ];
 
@@ -63,9 +68,10 @@ export function AppLayout({ children }: AppLayoutProps) {
 
         {/* Navigation */}
         <nav className="flex-1 p-4 space-y-1">
-          {navItems.map(item => {
+          {sidebarNavItems.map(item => {
             const Icon = item.icon;
-            const isActive = location.pathname === item.path;
+            const isActive = location.pathname === item.path || 
+              (item.path === '/signals' && location.pathname.startsWith('/signals'));
             
             return (
               <Link
@@ -142,17 +148,18 @@ export function AppLayout({ children }: AppLayoutProps) {
         </div>
       </aside>
 
-      {/* Main Content */}
-      <main className="flex-1 pb-20 md:pb-0">
+      {/* Main Content - with safe area padding for mobile nav */}
+      <main className="flex-1 safe-area-bottom-nav md:pb-0">
         {children}
       </main>
 
       {/* Mobile Bottom Navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 md:hidden bg-card border-t border-border safe-area-pb">
+      <nav className="fixed bottom-0 left-0 right-0 md:hidden bg-card/95 backdrop-blur-lg border-t border-border safe-area-pb z-50">
         <div className="flex justify-around items-center h-16">
-          {navItems.slice(0, 5).map(item => {
+          {navItems.map(item => {
             const Icon = item.icon;
-            const isActive = location.pathname === item.path;
+            const isActive = location.pathname === item.path || 
+              (item.path === '/signals' && location.pathname.startsWith('/signals'));
             
             return (
               <Link

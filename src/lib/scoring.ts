@@ -187,6 +187,17 @@ export function filterStocks(stocks: Stock[], filters: ScreenerFilters): Stock[]
     
     // Valuation flag filter
     if (filters.excludeRed && stock.valuationFlag === 'red') return false;
+    if (!filters.includeNAValuation && stock.valuationFlag === 'na') return false;
+    
+    // Stock type filter
+    if (filters.stockTypes && filters.stockTypes.length > 0) {
+      if (!filters.stockTypes.includes(stock.stockType)) return false;
+    }
+    
+    // Value chain layer filter
+    if (filters.valueChainLayers && filters.valueChainLayers.length > 0) {
+      if (!stock.valueChainLayer || !filters.valueChainLayers.includes(stock.valueChainLayer)) return false;
+    }
     
     // Market cap filter
     if (filters.minMarketCap && stock.marketCap !== null) {

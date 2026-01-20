@@ -40,7 +40,10 @@ const initialFilters: ScreenerFilters = {
   maxDebtEquity: null,
   maxBeta: null,
   minConfidence: null,
-  excludeRed: false
+  excludeRed: true, // Default to excluding RED (overvalued) stocks
+  stockTypes: [], // Empty = all types
+  valueChainLayers: [],
+  includeNAValuation: true
 };
 
 // Initialize stocks with computed scores

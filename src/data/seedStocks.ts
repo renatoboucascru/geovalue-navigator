@@ -10,11 +10,11 @@ export const SECTORS: Sector[] = [
 ];
 
 export const VALUE_CHAIN_LAYERS: ValueChainLayer[] = [
-  'Foundry', 'Lithography', 'Semi Equip', 'Materials', 'Packaging/OSAT',
+  'Foundry', 'Lithography', 'Semi Equipment', 'Materials', 'Packaging/OSAT',
   'Memory', 'Networking', 'Power/Cooling', 'Defense Electronics',
   'Uranium/Fuel Cycle', 'Industrial', 'Healthcare Services', 'Pharma/Biotech',
   'Medical Devices', 'Energy Infrastructure', 'Transportation',
-  'Cloud/Data Center', 'Robotics/Automation', 'Software/AI', 'Consumer'
+  'Cloud/Data Center', 'Robotics/Automation', 'Software/AI', 'Consumer', 'MedTech'
 ];
 
 export const seedStocks: Stock[] = [
@@ -187,7 +187,7 @@ export const seedStocks: Stock[] = [
     sectors: ['Chips'],
     roles: ['Deposition', 'Etch', 'CMP Equipment'],
     stockType: 'supplier',
-    valueChainLayer: 'Semi Equip',
+    valueChainLayer: 'Semi Equipment',
     price: 198.45,
     priceChange: 2.12,
     priceChangePercent: 1.08,
@@ -218,7 +218,7 @@ export const seedStocks: Stock[] = [
     sectors: ['Chips'],
     roles: ['Etch Equipment', 'Deposition'],
     stockType: 'supplier',
-    valueChainLayer: 'Semi Equip',
+    valueChainLayer: 'Semi Equipment',
     price: 892.34,
     priceChange: 8.56,
     priceChangePercent: 0.97,
@@ -249,7 +249,7 @@ export const seedStocks: Stock[] = [
     sectors: ['Chips'],
     roles: ['Metrology', 'Inspection Equipment'],
     stockType: 'supplier',
-    valueChainLayer: 'Semi Equip',
+    valueChainLayer: 'Semi Equipment',
     price: 678.90,
     priceChange: 5.45,
     priceChangePercent: 0.81,

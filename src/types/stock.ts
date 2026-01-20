@@ -8,12 +8,12 @@ export type Confidence = 'high' | 'medium' | 'low';
 
 export type StockType = 'leader' | 'supplier' | 'standalone';
 
-export type SortOption = 'score' | 'valuation' | 'beta' | 'dividend' | 'debtEquity';
+export type SortOption = 'composite' | 'cheapest' | 'lowestBeta' | 'highestDividend' | 'lowestDebt';
 
 export type ValueChainLayer =
   | 'Foundry'
   | 'Lithography'
-  | 'Semi Equip'
+  | 'Semi Equipment'
   | 'Materials'
   | 'Packaging/OSAT'
   | 'Memory'
@@ -24,6 +24,7 @@ export type ValueChainLayer =
   | 'Industrial'
   | 'Healthcare Services'
   | 'Pharma/Biotech'
+  | 'MedTech'
   | 'Medical Devices'
   | 'Energy Infrastructure'
   | 'Transportation'

@@ -5,12 +5,37 @@ import { cn } from '@/lib/utils';
 import { useScreenerStore } from '@/store/screenerStore';
 import { SectorChip } from './SectorChip';
 import { SECTORS } from '@/data/seedStocks';
-import { RiskProfile } from '@/types/stock';
+import { RiskProfile, StockType, ValueChainLayer } from '@/types/stock';
 
 const riskProfiles: { value: RiskProfile; label: string; icon: React.ElementType; description: string }[] = [
   { value: 'conservative', label: 'Conservative', icon: Shield, description: 'Lower risk, stable returns' },
   { value: 'moderate', label: 'Moderate', icon: TrendingUp, description: 'Balanced approach' },
   { value: 'aggressive', label: 'Aggressive', icon: Zap, description: 'Higher risk, growth focus' }
+];
+
+const stockTypeOptions: { value: StockType | 'all'; label: string }[] = [
+  { value: 'all', label: 'All Types' },
+  { value: 'leader', label: 'Leaders/Customers' },
+  { value: 'supplier', label: 'Suppliers/Enablers' },
+  { value: 'standalone', label: 'Standalone' }
+];
+
+const valueChainLayerOptions: { value: ValueChainLayer | 'all'; label: string }[] = [
+  { value: 'all', label: 'All Layers' },
+  { value: 'Foundry', label: 'Foundry' },
+  { value: 'Lithography', label: 'Lithography' },
+  { value: 'Semi Equipment', label: 'Semi Equipment' },
+  { value: 'Materials', label: 'Materials' },
+  { value: 'Packaging/OSAT', label: 'Packaging/OSAT' },
+  { value: 'Memory', label: 'Memory' },
+  { value: 'Networking', label: 'Networking' },
+  { value: 'Power/Cooling', label: 'Power/Cooling' },
+  { value: 'Defense Electronics', label: 'Defense Electronics' },
+  { value: 'Uranium/Fuel Cycle', label: 'Uranium/Fuel Cycle' },
+  { value: 'Pharma/Biotech', label: 'Pharma/Biotech' },
+  { value: 'MedTech', label: 'MedTech' },
+  { value: 'Healthcare Services', label: 'Healthcare Services' },
+  { value: 'Energy Infrastructure', label: 'Energy Infrastructure' }
 ];
 
 export const InputScreen: React.FC = () => {
@@ -201,7 +226,51 @@ export const InputScreen: React.FC = () => {
               exit={{ height: 0, opacity: 0 }}
               className="mt-4 space-y-4"
             >
-              <div className="flex items-center gap-4">
+              {/* Stock Type & Value Chain Layer - New Filters */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs text-muted-foreground mb-1">Stock Type</label>
+                  <select
+                    value={filters.stockTypes.length === 0 ? 'all' : filters.stockTypes[0]}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      if (val === 'all') {
+                        setFilter('stockTypes', []);
+                      } else {
+                        setFilter('stockTypes', [val as StockType]);
+                      }
+                    }}
+                    className="w-full h-10 px-3 bg-card border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
+                  >
+                    {stockTypeOptions.map(opt => (
+                      <option key={opt.value} value={opt.value}>{opt.label}</option>
+                    ))}
+                  </select>
+                </div>
+                
+                <div>
+                  <label className="block text-xs text-muted-foreground mb-1">Value Chain Layer</label>
+                  <select
+                    value={filters.valueChainLayers.length === 0 ? 'all' : filters.valueChainLayers[0]}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      if (val === 'all') {
+                        setFilter('valueChainLayers', []);
+                      } else {
+                        setFilter('valueChainLayers', [val as ValueChainLayer]);
+                      }
+                    }}
+                    className="w-full h-10 px-3 bg-card border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
+                  >
+                    {valueChainLayerOptions.map(opt => (
+                      <option key={opt.value} value={opt.value}>{opt.label}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+              
+              {/* Valuation Toggles */}
+              <div className="flex flex-wrap items-center gap-4">
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input
                     type="checkbox"
@@ -209,7 +278,16 @@ export const InputScreen: React.FC = () => {
                     onChange={(e) => setFilter('excludeRed', e.target.checked)}
                     className="w-5 h-5 rounded border-border text-primary focus:ring-primary"
                   />
-                  <span className="text-sm">Exclude overvalued (RED) stocks</span>
+                  <span className="text-sm">Exclude overvalued (RED)</span>
+                </label>
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={filters.includeNAValuation}
+                    onChange={(e) => setFilter('includeNAValuation', e.target.checked)}
+                    className="w-5 h-5 rounded border-border text-primary focus:ring-primary"
+                  />
+                  <span className="text-sm">Include N/A valuation</span>
                 </label>
               </div>
               

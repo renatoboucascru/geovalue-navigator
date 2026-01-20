@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils';
 import { Stock, PortfolioAllocation } from '@/types/stock';
 import { ValuationBadge } from './ValuationBadge';
 import { ScoreRing } from './ScoreRing';
-import { Lock, Unlock, ChevronRight, TrendingUp, TrendingDown } from 'lucide-react';
+import { Lock, Unlock, ChevronRight, TrendingUp, TrendingDown, Building2, Truck, Briefcase } from 'lucide-react';
 import { generateWhyIncluded } from '@/lib/scoring';
 import { useScreenerStore } from '@/store/screenerStore';
 
@@ -27,6 +27,12 @@ function formatNumber(value: number | null, suffix = ''): string {
   return `${value.toFixed(2)}${suffix}`;
 }
 
+const stockTypeConfig = {
+  leader: { label: 'Leader', icon: Building2, className: 'bg-primary/10 text-primary border-primary/20' },
+  supplier: { label: 'Supplier', icon: Truck, className: 'bg-signal-yellow-bg text-signal-yellow border-signal-yellow/20' },
+  standalone: { label: 'Standalone', icon: Briefcase, className: 'bg-accent text-accent-foreground border-accent' }
+};
+
 export const StockCard: React.FC<StockCardProps> = ({ allocation, index, onClick }) => {
   const { stock, dollarAmount, percentWeight, locked } = allocation;
   const { toggleLock, riskProfile } = useScreenerStore();
@@ -34,11 +40,14 @@ export const StockCard: React.FC<StockCardProps> = ({ allocation, index, onClick
   const isPositive = stock.priceChangePercent !== null && stock.priceChangePercent >= 0;
   const whyIncluded = generateWhyIncluded(stock, riskProfile);
   
+  const typeConfig = stockTypeConfig[stock.stockType || 'leader'];
+  const TypeIcon = typeConfig.icon;
+  
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.05 }}
+      transition={{ delay: Math.min(index * 0.03, 0.3) }}
       className={cn(
         'bg-card rounded-2xl shadow-ios border border-border',
         'p-4 cursor-pointer hover:shadow-ios-lg transition-shadow'
@@ -48,9 +57,17 @@ export const StockCard: React.FC<StockCardProps> = ({ allocation, index, onClick
       {/* Header */}
       <div className="flex items-start justify-between mb-3">
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 mb-1">
+          <div className="flex items-center gap-2 mb-1 flex-wrap">
             <span className="font-semibold text-foreground">{stock.ticker}</span>
             <ValuationBadge flag={stock.valuationFlag} size="sm" />
+            {/* Stock Type Badge */}
+            <span className={cn(
+              'inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium border',
+              typeConfig.className
+            )}>
+              <TypeIcon className="h-3 w-3" />
+              {typeConfig.label}
+            </span>
           </div>
           <p className="text-sm text-muted-foreground truncate">{stock.name}</p>
         </div>
@@ -71,6 +88,15 @@ export const StockCard: React.FC<StockCardProps> = ({ allocation, index, onClick
           </button>
         </div>
       </div>
+      
+      {/* Value Chain Layer Badge */}
+      {stock.valueChainLayer && (
+        <div className="mb-3">
+          <span className="inline-block px-2 py-0.5 bg-secondary text-secondary-foreground rounded text-xs">
+            {stock.valueChainLayer}
+          </span>
+        </div>
+      )}
       
       {/* Price Row */}
       <div className="flex items-center justify-between mb-3 pb-3 border-b border-border">

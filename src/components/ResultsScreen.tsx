@@ -1,11 +1,12 @@
-import React from 'react';
+import React, { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Download, Copy, Check, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, Download, Copy, Check, AlertTriangle, ChevronDown, Clock } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useScreenerStore } from '@/store/screenerStore';
 import { StockCard } from './StockCard';
 import { StockDetailModal } from './StockDetailModal';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
+import { SortOption } from '@/types/stock';
 
 const CHART_COLORS = [
   'hsl(211, 100%, 50%)',  // primary blue
@@ -16,6 +17,16 @@ const CHART_COLORS = [
   'hsl(200, 80%, 50%)',   // light blue
   'hsl(160, 60%, 45%)',   // teal
   'hsl(30, 80%, 55%)',    // orange
+];
+
+const PAGE_SIZE_OPTIONS = [25, 50, 100];
+
+const SORT_OPTIONS: { value: SortOption; label: string }[] = [
+  { value: 'composite', label: 'Best Score' },
+  { value: 'cheapest', label: 'Cheapest (P/E)' },
+  { value: 'lowestBeta', label: 'Lowest Beta' },
+  { value: 'highestDividend', label: 'Highest Dividend' },
+  { value: 'lowestDebt', label: 'Lowest Debt' }
 ];
 
 export const ResultsScreen: React.FC = () => {
@@ -30,28 +41,59 @@ export const ResultsScreen: React.FC = () => {
     filteredStocks
   } = useScreenerStore();
   
-  const [copied, setCopied] = React.useState(false);
+  const [copied, setCopied] = useState(false);
+  const [pageSize, setPageSize] = useState(25);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [sortBy, setSortBy] = useState<SortOption>('composite');
   
   const selectedStock = selectedStockId 
     ? filteredStocks.find(s => s.id === selectedStockId) 
     : null;
   
-  const pieData = allocations.slice(0, 8).map((a, i) => ({
+  // Sort allocations based on selected sort option
+  const sortedAllocations = useMemo(() => {
+    const sorted = [...allocations];
+    switch (sortBy) {
+      case 'cheapest':
+        return sorted.sort((a, b) => (a.stock.peRatio ?? 999) - (b.stock.peRatio ?? 999));
+      case 'lowestBeta':
+        return sorted.sort((a, b) => (a.stock.beta ?? 999) - (b.stock.beta ?? 999));
+      case 'highestDividend':
+        return sorted.sort((a, b) => (b.stock.dividendYield ?? 0) - (a.stock.dividendYield ?? 0));
+      case 'lowestDebt':
+        return sorted.sort((a, b) => (a.stock.debtEquity ?? 999) - (b.stock.debtEquity ?? 999));
+      case 'composite':
+      default:
+        return sorted.sort((a, b) => b.stock.compositeScore - a.stock.compositeScore);
+    }
+  }, [allocations, sortBy]);
+  
+  // Pagination
+  const totalCount = sortedAllocations.length;
+  const totalPages = Math.ceil(totalCount / pageSize);
+  const paginatedAllocations = sortedAllocations.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
+  );
+  
+  const pieData = sortedAllocations.slice(0, 8).map((a, i) => ({
     name: a.stock.ticker,
     value: a.percentWeight * 100,
     color: CHART_COLORS[i % CHART_COLORS.length]
   }));
   
-  if (allocations.length > 8) {
-    const othersPercent = allocations.slice(8).reduce((sum, a) => sum + a.percentWeight * 100, 0);
+  if (sortedAllocations.length > 8) {
+    const othersPercent = sortedAllocations.slice(8).reduce((sum, a) => sum + a.percentWeight * 100, 0);
     pieData.push({ name: 'Others', value: othersPercent, color: 'hsl(220, 14%, 80%)' });
   }
   
   const handleExportCSV = () => {
-    const headers = ['Ticker', 'Name', 'Allocation ($)', 'Weight (%)', 'Price', 'P/E', 'Forward P/E', 'Valuation', 'Score'];
-    const rows = allocations.map(a => [
+    const headers = ['Ticker', 'Name', 'Type', 'Layer', 'Allocation ($)', 'Weight (%)', 'Price', 'P/E', 'Forward P/E', 'Valuation', 'Score'];
+    const rows = sortedAllocations.map(a => [
       a.stock.ticker,
       a.stock.name,
+      a.stock.stockType || 'leader',
+      a.stock.valueChainLayer || '',
       a.dollarAmount.toFixed(2),
       (a.percentWeight * 100).toFixed(2),
       a.stock.price?.toFixed(2) ?? 'N/A',
@@ -72,11 +114,16 @@ export const ResultsScreen: React.FC = () => {
   };
   
   const handleCopyTickers = () => {
-    const tickers = allocations.map(a => `${a.stock.ticker}: $${a.dollarAmount.toFixed(0)}`).join('\n');
+    const tickers = sortedAllocations.map(a => `${a.stock.ticker}: $${a.dollarAmount.toFixed(0)}`).join('\n');
     navigator.clipboard.writeText(tickers);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
+  
+  // Reset to page 1 when sort changes
+  React.useEffect(() => {
+    setCurrentPage(1);
+  }, [sortBy, pageSize]);
   
   return (
     <motion.div
@@ -105,6 +152,7 @@ export const ResultsScreen: React.FC = () => {
             <button
               onClick={handleExportCSV}
               className="p-2 rounded-full bg-secondary hover:bg-secondary/80 transition-colors"
+              title="Export all results to CSV"
             >
               <Download className="h-5 w-5 text-muted-foreground" />
             </button>
@@ -113,7 +161,7 @@ export const ResultsScreen: React.FC = () => {
       </div>
       
       <div className="max-w-4xl mx-auto px-4">
-        {/* Summary */}
+        {/* Summary with count and filters */}
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -122,9 +170,64 @@ export const ResultsScreen: React.FC = () => {
           <h1 className="text-2xl font-bold text-foreground mb-1">
             Your Portfolio
           </h1>
-          <p className="text-muted-foreground">
-            ${investmentAmount.toLocaleString()} • {riskProfile.charAt(0).toUpperCase() + riskProfile.slice(1)} • {allocations.length} stocks
+          <p className="text-muted-foreground mb-2">
+            ${investmentAmount.toLocaleString()} • {riskProfile.charAt(0).toUpperCase() + riskProfile.slice(1)} • {totalCount} stocks
           </p>
+          
+          {/* Results Header */}
+          <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+            <span className="font-medium text-foreground">
+              Showing {paginatedAllocations.length} of {totalCount} matches
+            </span>
+            <span>•</span>
+            <span>{filters.sectors.length > 0 ? filters.sectors.join(', ') : 'All sectors'}</span>
+            {filters.includeIranGulf && <span className="text-signal-yellow">+ Gulf Scenario</span>}
+            <span>•</span>
+            <span className="inline-flex items-center gap-1">
+              <Clock className="h-3 w-3" />
+              Updated: {new Date().toLocaleDateString()}
+            </span>
+          </div>
+        </motion.div>
+        
+        {/* Sort & Page Size Controls */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.05 }}
+          className="flex flex-wrap items-center gap-4 mb-6"
+        >
+          <div className="flex items-center gap-2">
+            <label className="text-xs text-muted-foreground">Sort by:</label>
+            <div className="relative">
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value as SortOption)}
+                className="h-9 pl-3 pr-8 bg-card border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 appearance-none cursor-pointer"
+              >
+                {SORT_OPTIONS.map(opt => (
+                  <option key={opt.value} value={opt.value}>{opt.label}</option>
+                ))}
+              </select>
+              <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+            </div>
+          </div>
+          
+          <div className="flex items-center gap-2">
+            <label className="text-xs text-muted-foreground">Per page:</label>
+            <div className="relative">
+              <select
+                value={pageSize}
+                onChange={(e) => setPageSize(Number(e.target.value))}
+                className="h-9 pl-3 pr-8 bg-card border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 appearance-none cursor-pointer"
+              >
+                {PAGE_SIZE_OPTIONS.map(size => (
+                  <option key={size} value={size}>{size}</option>
+                ))}
+              </select>
+              <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+            </div>
+          </div>
         </motion.div>
         
         {/* Pie Chart */}
@@ -195,7 +298,7 @@ export const ResultsScreen: React.FC = () => {
         
         {/* Stock Cards */}
         <div className="space-y-4">
-          {allocations.map((allocation, index) => (
+          {paginatedAllocations.map((allocation, index) => (
             <StockCard
               key={allocation.stock.id}
               allocation={allocation}
@@ -204,6 +307,83 @@ export const ResultsScreen: React.FC = () => {
             />
           ))}
         </div>
+        
+        {/* Pagination Controls */}
+        {totalPages > 1 && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="flex items-center justify-center gap-2 mt-8"
+          >
+            <button
+              onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+              disabled={currentPage === 1}
+              className={cn(
+                'px-4 py-2 rounded-lg text-sm font-medium transition-colors',
+                currentPage === 1
+                  ? 'bg-secondary text-muted-foreground cursor-not-allowed'
+                  : 'bg-primary text-primary-foreground hover:opacity-90'
+              )}
+            >
+              Previous
+            </button>
+            
+            <div className="flex items-center gap-1">
+              {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                let pageNum: number;
+                if (totalPages <= 5) {
+                  pageNum = i + 1;
+                } else if (currentPage <= 3) {
+                  pageNum = i + 1;
+                } else if (currentPage >= totalPages - 2) {
+                  pageNum = totalPages - 4 + i;
+                } else {
+                  pageNum = currentPage - 2 + i;
+                }
+                
+                return (
+                  <button
+                    key={pageNum}
+                    onClick={() => setCurrentPage(pageNum)}
+                    className={cn(
+                      'w-10 h-10 rounded-lg text-sm font-medium transition-colors',
+                      currentPage === pageNum
+                        ? 'bg-primary text-primary-foreground'
+                        : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
+                    )}
+                  >
+                    {pageNum}
+                  </button>
+                );
+              })}
+            </div>
+            
+            <button
+              onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+              disabled={currentPage === totalPages}
+              className={cn(
+                'px-4 py-2 rounded-lg text-sm font-medium transition-colors',
+                currentPage === totalPages
+                  ? 'bg-secondary text-muted-foreground cursor-not-allowed'
+                  : 'bg-primary text-primary-foreground hover:opacity-90'
+              )}
+            >
+              Next
+            </button>
+          </motion.div>
+        )}
+        
+        {/* Load All Option */}
+        {totalCount > pageSize && (
+          <div className="text-center mt-4">
+            <button
+              onClick={() => setPageSize(totalCount)}
+              className="text-sm text-primary hover:underline"
+            >
+              Show all {totalCount} results (may be slower)
+            </button>
+          </div>
+        )}
         
         {allocations.length === 0 && (
           <motion.div

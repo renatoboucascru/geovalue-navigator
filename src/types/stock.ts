@@ -6,6 +6,32 @@ export type ValuationFlag = 'green' | 'yellow' | 'red' | 'na';
 
 export type Confidence = 'high' | 'medium' | 'low';
 
+export type StockType = 'leader' | 'supplier' | 'standalone';
+
+export type SortOption = 'score' | 'valuation' | 'beta' | 'dividend' | 'debtEquity';
+
+export type ValueChainLayer =
+  | 'Foundry'
+  | 'Lithography'
+  | 'Semi Equip'
+  | 'Materials'
+  | 'Packaging/OSAT'
+  | 'Memory'
+  | 'Networking'
+  | 'Power/Cooling'
+  | 'Defense Electronics'
+  | 'Uranium/Fuel Cycle'
+  | 'Industrial'
+  | 'Healthcare Services'
+  | 'Pharma/Biotech'
+  | 'Medical Devices'
+  | 'Energy Infrastructure'
+  | 'Transportation'
+  | 'Cloud/Data Center'
+  | 'Robotics/Automation'
+  | 'Software/AI'
+  | 'Consumer';
+
 export type Sector =
   | 'AI'
   | 'Chips'
@@ -33,6 +59,10 @@ export interface Stock {
   sectors: Sector[];
   roles: string[];
   
+  // Stock classification
+  stockType: StockType;
+  valueChainLayer?: ValueChainLayer;
+  
   // Market data
   price: number | null;
   priceChange: number | null;
@@ -59,6 +89,11 @@ export interface Stock {
   publiclyTraded: boolean;
   geoConcentrationRisk: number; // 1-5
   scenarioTailwind: number; // 0-5
+  
+  // Mapping completeness
+  mappingCompleteness: number; // 0-100
+  edgesCount: number;
+  missingCriticalLayers?: string[];
   
   // Iran/Gulf scenario specific
   iranGulfCategory?: string;
@@ -97,6 +132,9 @@ export interface ScreenerFilters {
   maxBeta: number | null;
   minConfidence: Confidence | null;
   excludeRed: boolean;
+  stockTypes: StockType[];
+  valueChainLayers: ValueChainLayer[];
+  includeNAValuation: boolean;
 }
 
 export interface ScreenerInput {

@@ -75,11 +75,18 @@ export interface Stock {
   forwardPE: number | null;
   evEbitda: number | null;
   priceFCF: number | null;
+  priceSales?: number | null;
   
   // Fundamentals
   debtEquity: number | null;
   dividendYield: number | null;
   beta: number | null;
+  grossMargin?: number | null;
+  operatingMargin?: number | null;
+  fcfMargin?: number | null;
+  revenueGrowth?: number | null;
+  roic?: number | null;
+  netDebtEBITDA?: number | null;
   
   // Scoring
   valuationFlag: ValuationFlag;
@@ -100,7 +107,9 @@ export interface Stock {
   iranGulfCategory?: string;
   
   // Metadata
-  lastUpdated: Date;
+  lastUpdated?: Date | string;
+  dataFreshness?: string;
+  valuationBasis?: string;
   notes?: string;
   evidenceUrl?: string;
 }

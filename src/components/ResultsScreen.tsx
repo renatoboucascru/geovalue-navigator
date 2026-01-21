@@ -1,13 +1,13 @@
 import React, { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Download, Copy, Check, AlertTriangle, ChevronDown, Clock } from 'lucide-react';
+import { ArrowLeft, Download, Copy, Check, AlertTriangle, ChevronDown, Clock, RefreshCw } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useScreenerStore } from '@/store/screenerStore';
 import { StockCard } from './StockCard';
 import { StockDetailModal } from './StockDetailModal';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 import { SortOption } from '@/types/stock';
-
+import { useRefreshPrices, useLastPriceUpdate } from '@/hooks/useStockPrices';
 const CHART_COLORS = [
   'hsl(211, 100%, 50%)',  // primary blue
   'hsl(142, 71%, 45%)',   // green
@@ -40,6 +40,9 @@ export const ResultsScreen: React.FC = () => {
     selectedStockId,
     filteredStocks
   } = useScreenerStore();
+  
+  const { mutate: refreshPrices, isPending: isRefreshing } = useRefreshPrices();
+  const { data: lastUpdate } = useLastPriceUpdate();
   
   const [copied, setCopied] = useState(false);
   const [pageSize, setPageSize] = useState(25);
@@ -144,6 +147,17 @@ export const ResultsScreen: React.FC = () => {
           
           <div className="flex items-center gap-2">
             <button
+              onClick={() => refreshPrices(undefined)}
+              disabled={isRefreshing}
+              className={cn(
+                'p-2 rounded-full bg-secondary hover:bg-secondary/80 transition-colors',
+                isRefreshing && 'animate-spin'
+              )}
+              title="Refresh stock prices"
+            >
+              <RefreshCw className="h-5 w-5 text-muted-foreground" />
+            </button>
+            <button
               onClick={handleCopyTickers}
               className="p-2 rounded-full bg-secondary hover:bg-secondary/80 transition-colors"
             >
@@ -185,8 +199,9 @@ export const ResultsScreen: React.FC = () => {
             <span>•</span>
             <span className="inline-flex items-center gap-1">
               <Clock className="h-3 w-3" />
-              Updated: {new Date().toLocaleDateString()}
+              {lastUpdate ? `Updated: ${new Date(lastUpdate).toLocaleString()}` : 'Prices from seed data'}
             </span>
+            {isRefreshing && <span className="text-primary animate-pulse">Refreshing...</span>}
           </div>
         </motion.div>
         

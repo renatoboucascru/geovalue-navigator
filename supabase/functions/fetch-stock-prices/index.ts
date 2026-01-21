@@ -84,7 +84,7 @@ Deno.serve(async (req) => {
       tickers = body.tickers || [];
     }
 
-    // If no specific tickers, fetch all from database
+    // If no specific tickers, fetch all from database OR use default list
     if (tickers.length === 0) {
       const { data: stocks, error } = await supabase
         .from("stocks")
@@ -95,11 +95,27 @@ Deno.serve(async (req) => {
       tickers = stocks?.map((s) => s.ticker) || [];
     }
 
+    // If still no tickers (empty database), use a default list of popular stocks
     if (tickers.length === 0) {
-      return new Response(
-        JSON.stringify({ success: true, updated: 0, message: "No tickers to update" }),
-        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+      tickers = [
+        // AI & Chips
+        "NVDA", "AMD", "MSFT", "TSM", "ASML", "AMAT", "LRCX", "KLAC", "MU", "AVGO",
+        "INTC", "QCOM", "TXN", "MRVL", "ARM", "GOOGL", "META", "AMZN",
+        // Defense
+        "LMT", "RTX", "NOC", "GD", "BA", "LHX",
+        // Energy & Nuclear
+        "XOM", "CVX", "COP", "OXY", "CCJ", "UEC", "LEU", "NNE", "VST", "CEG", "SMR",
+        // Space & Drones
+        "RKLB", "IRDM", "KTOS", "PLTR", "RCAT", "JOBY", "ACHR",
+        // Critical Minerals & Materials
+        "MP", "LAC", "ALTM", "ALB", "SQM", "VALE", "RIO", "BHP", "FCX",
+        // Robotics & Automation
+        "ISRG", "ABB", "ROK", "EMR", "HON", "JCI",
+        // Healthcare
+        "UNH", "JNJ", "PFE", "ABBV", "LLY", "MRK", "TMO", "DHR", "ABT", "MDT",
+        // Other Tech
+        "AAPL", "CRM", "ORCL", "IBM", "SNOW", "PANW", "CRWD", "ZS", "NET", "DDOG"
+      ];
     }
 
     // FMP allows batch quotes (up to 100 at a time)
@@ -183,16 +199,22 @@ Deno.serve(async (req) => {
       }
     }
 
-    // Upsert all updates to database
+    // Upsert all updates to database (insert or update)
     let updatedCount = 0;
     for (const update of updates) {
       const { error } = await supabase
         .from("stocks")
-        .update(update)
-        .eq("ticker", update.ticker);
+        .upsert(
+          { 
+            ...update,
+            publicly_traded: true,
+            composite_score: 50, // Default score for new stocks
+          }, 
+          { onConflict: "ticker" }
+        );
 
       if (error) {
-        errors.push(`DB update failed for ${update.ticker}: ${error.message}`);
+        errors.push(`DB upsert failed for ${update.ticker}: ${error.message}`);
       } else {
         updatedCount++;
       }

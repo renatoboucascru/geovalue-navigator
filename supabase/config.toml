@@ -2,3 +2,12 @@ project_id = "cyscdoebzcfobftvfgao"
 
 [functions.fetch-stock-prices]
 verify_jwt = false
+
+[functions.fetch-news]
+verify_jwt = false
+
+[functions.analyze-sentiment]
+verify_jwt = false
+
+[functions.paper-trade]
+verify_jwt = false

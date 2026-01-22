@@ -13,6 +13,7 @@ import Settings from "./pages/Settings";
 import Signals from "./pages/Signals";
 import PrivateBets from "./pages/PrivateBets";
 import WhaleTracker from "./pages/WhaleTracker";
+import PaperTrading from "./pages/PaperTrading";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 
@@ -35,6 +36,7 @@ const App = () => (
             <Route path="/signals" element={<AppLayout><Signals /></AppLayout>} />
             <Route path="/signals/private-bets" element={<AppLayout><PrivateBets /></AppLayout>} />
             <Route path="/signals/whale-tracker" element={<AppLayout><WhaleTracker /></AppLayout>} />
+            <Route path="/paper-trading" element={<AppLayout><PaperTrading /></AppLayout>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

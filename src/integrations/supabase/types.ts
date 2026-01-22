@@ -14,6 +14,48 @@ export type Database = {
   }
   public: {
     Tables: {
+      api_provider_status: {
+        Row: {
+          created_at: string
+          failed_calls: number | null
+          id: string
+          is_active: boolean | null
+          last_error_at: string | null
+          last_error_message: string | null
+          last_success_at: string | null
+          provider: string
+          successful_calls: number | null
+          total_calls: number | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          failed_calls?: number | null
+          id?: string
+          is_active?: boolean | null
+          last_error_at?: string | null
+          last_error_message?: string | null
+          last_success_at?: string | null
+          provider: string
+          successful_calls?: number | null
+          total_calls?: number | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          failed_calls?: number | null
+          id?: string
+          is_active?: boolean | null
+          last_error_at?: string | null
+          last_error_message?: string | null
+          last_success_at?: string | null
+          provider?: string
+          successful_calls?: number | null
+          total_calls?: number | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       brokerage_connections: {
         Row: {
           connection_type: string
@@ -193,6 +235,274 @@ export type Database = {
             columns: ["holding_id"]
             isOneToOne: false
             referencedRelation: "brokerage_holdings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      comment_votes: {
+        Row: {
+          comment_id: string
+          created_at: string
+          id: string
+          user_id: string
+          vote_type: string
+        }
+        Insert: {
+          comment_id: string
+          created_at?: string
+          id?: string
+          user_id: string
+          vote_type: string
+        }
+        Update: {
+          comment_id?: string
+          created_at?: string
+          id?: string
+          user_id?: string
+          vote_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "comment_votes_comment_id_fkey"
+            columns: ["comment_id"]
+            isOneToOne: false
+            referencedRelation: "ticker_comments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      news_items: {
+        Row: {
+          category: string | null
+          created_at: string
+          fetched_at: string
+          headline: string
+          id: string
+          image_url: string | null
+          published_at: string
+          related_tickers: string[] | null
+          source: string | null
+          summary: string | null
+          ticker: string
+          url: string | null
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          fetched_at?: string
+          headline: string
+          id?: string
+          image_url?: string | null
+          published_at: string
+          related_tickers?: string[] | null
+          source?: string | null
+          summary?: string | null
+          ticker: string
+          url?: string | null
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          fetched_at?: string
+          headline?: string
+          id?: string
+          image_url?: string | null
+          published_at?: string
+          related_tickers?: string[] | null
+          source?: string | null
+          summary?: string | null
+          ticker?: string
+          url?: string | null
+        }
+        Relationships: []
+      }
+      paper_accounts: {
+        Row: {
+          created_at: string
+          current_cash: number
+          id: string
+          name: string
+          starting_balance: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          current_cash?: number
+          id?: string
+          name?: string
+          starting_balance?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          current_cash?: number
+          id?: string
+          name?: string
+          starting_balance?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      paper_holdings: {
+        Row: {
+          account_id: string
+          avg_cost_basis: number
+          created_at: string
+          id: string
+          realized_pl: number
+          shares: number
+          stock_id: string | null
+          ticker: string
+          updated_at: string
+        }
+        Insert: {
+          account_id: string
+          avg_cost_basis?: number
+          created_at?: string
+          id?: string
+          realized_pl?: number
+          shares?: number
+          stock_id?: string | null
+          ticker: string
+          updated_at?: string
+        }
+        Update: {
+          account_id?: string
+          avg_cost_basis?: number
+          created_at?: string
+          id?: string
+          realized_pl?: number
+          shares?: number
+          stock_id?: string | null
+          ticker?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "paper_holdings_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: false
+            referencedRelation: "paper_accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "paper_holdings_stock_id_fkey"
+            columns: ["stock_id"]
+            isOneToOne: false
+            referencedRelation: "stocks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      paper_orders: {
+        Row: {
+          account_id: string
+          created_at: string
+          expires_at: string | null
+          filled_at: string | null
+          filled_price: number | null
+          filled_quantity: number | null
+          id: string
+          limit_price: number | null
+          order_type: string
+          quantity: number
+          side: string
+          status: string
+          stock_id: string | null
+          ticker: string
+        }
+        Insert: {
+          account_id: string
+          created_at?: string
+          expires_at?: string | null
+          filled_at?: string | null
+          filled_price?: number | null
+          filled_quantity?: number | null
+          id?: string
+          limit_price?: number | null
+          order_type: string
+          quantity: number
+          side: string
+          status?: string
+          stock_id?: string | null
+          ticker: string
+        }
+        Update: {
+          account_id?: string
+          created_at?: string
+          expires_at?: string | null
+          filled_at?: string | null
+          filled_price?: number | null
+          filled_quantity?: number | null
+          id?: string
+          limit_price?: number | null
+          order_type?: string
+          quantity?: number
+          side?: string
+          status?: string
+          stock_id?: string | null
+          ticker?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "paper_orders_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: false
+            referencedRelation: "paper_accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "paper_orders_stock_id_fkey"
+            columns: ["stock_id"]
+            isOneToOne: false
+            referencedRelation: "stocks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      paper_performance_daily: {
+        Row: {
+          account_id: string
+          cash: number
+          created_at: string
+          daily_pl: number | null
+          daily_pl_percent: number | null
+          date: string
+          holdings_value: number
+          id: string
+          total_equity: number
+        }
+        Insert: {
+          account_id: string
+          cash: number
+          created_at?: string
+          daily_pl?: number | null
+          daily_pl_percent?: number | null
+          date: string
+          holdings_value: number
+          id?: string
+          total_equity: number
+        }
+        Update: {
+          account_id?: string
+          cash?: number
+          created_at?: string
+          daily_pl?: number | null
+          daily_pl_percent?: number | null
+          date?: string
+          holdings_value?: number
+          id?: string
+          total_equity?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "paper_performance_daily_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: false
+            referencedRelation: "paper_accounts"
             referencedColumns: ["id"]
           },
         ]
@@ -479,6 +789,48 @@ export type Database = {
         }
         Relationships: []
       }
+      sentiment_scores: {
+        Row: {
+          analyzed_items_count: number | null
+          confidence: number
+          created_at: string
+          expires_at: string | null
+          id: string
+          key_drivers: string[] | null
+          risks: string[] | null
+          sentiment: string
+          source_type: string
+          summary: string | null
+          ticker: string
+        }
+        Insert: {
+          analyzed_items_count?: number | null
+          confidence: number
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          key_drivers?: string[] | null
+          risks?: string[] | null
+          sentiment: string
+          source_type: string
+          summary?: string | null
+          ticker: string
+        }
+        Update: {
+          analyzed_items_count?: number | null
+          confidence?: number
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          key_drivers?: string[] | null
+          risks?: string[] | null
+          sentiment?: string
+          source_type?: string
+          summary?: string | null
+          ticker?: string
+        }
+        Relationships: []
+      }
       stock_sectors: {
         Row: {
           id: string
@@ -547,14 +899,20 @@ export type Database = {
       }
       stocks: {
         Row: {
+          afterhours_change_percent: number | null
+          atr_14: number | null
+          avg_volume_10d: number | null
+          avg_volume_30d: number | null
           beta: number | null
           composite_score: number | null
           confidence: string | null
           country: string | null
           created_at: string
           data_freshness: string | null
+          day_range_percent: number | null
           debt_equity: number | null
           dividend_yield: number | null
+          dollar_volume: number | null
           ev_ebitda: number | null
           evidence_url: string | null
           exchange: string | null
@@ -571,12 +929,14 @@ export type Database = {
           notes: string | null
           operating_margin: number | null
           pe_ratio: number | null
+          premarket_change_percent: number | null
           price: number | null
           price_change: number | null
           price_change_percent: number | null
           price_fcf: number | null
           price_sales: number | null
           publicly_traded: boolean | null
+          relative_volume: number | null
           revenue_growth: number | null
           roic: number | null
           roles: string[] | null
@@ -584,16 +944,23 @@ export type Database = {
           ticker: string
           valuation_basis: string | null
           valuation_flag: string | null
+          volume: number | null
         }
         Insert: {
+          afterhours_change_percent?: number | null
+          atr_14?: number | null
+          avg_volume_10d?: number | null
+          avg_volume_30d?: number | null
           beta?: number | null
           composite_score?: number | null
           confidence?: string | null
           country?: string | null
           created_at?: string
           data_freshness?: string | null
+          day_range_percent?: number | null
           debt_equity?: number | null
           dividend_yield?: number | null
+          dollar_volume?: number | null
           ev_ebitda?: number | null
           evidence_url?: string | null
           exchange?: string | null
@@ -610,12 +977,14 @@ export type Database = {
           notes?: string | null
           operating_margin?: number | null
           pe_ratio?: number | null
+          premarket_change_percent?: number | null
           price?: number | null
           price_change?: number | null
           price_change_percent?: number | null
           price_fcf?: number | null
           price_sales?: number | null
           publicly_traded?: boolean | null
+          relative_volume?: number | null
           revenue_growth?: number | null
           roic?: number | null
           roles?: string[] | null
@@ -623,16 +992,23 @@ export type Database = {
           ticker: string
           valuation_basis?: string | null
           valuation_flag?: string | null
+          volume?: number | null
         }
         Update: {
+          afterhours_change_percent?: number | null
+          atr_14?: number | null
+          avg_volume_10d?: number | null
+          avg_volume_30d?: number | null
           beta?: number | null
           composite_score?: number | null
           confidence?: string | null
           country?: string | null
           created_at?: string
           data_freshness?: string | null
+          day_range_percent?: number | null
           debt_equity?: number | null
           dividend_yield?: number | null
+          dollar_volume?: number | null
           ev_ebitda?: number | null
           evidence_url?: string | null
           exchange?: string | null
@@ -649,12 +1025,14 @@ export type Database = {
           notes?: string | null
           operating_margin?: number | null
           pe_ratio?: number | null
+          premarket_change_percent?: number | null
           price?: number | null
           price_change?: number | null
           price_change_percent?: number | null
           price_fcf?: number | null
           price_sales?: number | null
           publicly_traded?: boolean | null
+          relative_volume?: number | null
           revenue_growth?: number | null
           roic?: number | null
           roles?: string[] | null
@@ -662,6 +1040,7 @@ export type Database = {
           ticker?: string
           valuation_basis?: string | null
           valuation_flag?: string | null
+          volume?: number | null
         }
         Relationships: []
       }
@@ -767,6 +1146,45 @@ export type Database = {
           notes?: string | null
           risk_caveats?: string | null
           tailwind_scores?: Json | null
+        }
+        Relationships: []
+      }
+      ticker_comments: {
+        Row: {
+          content: string
+          created_at: string
+          downvotes: number | null
+          id: string
+          is_hidden: boolean | null
+          is_verified_holder: boolean | null
+          ticker: string
+          updated_at: string
+          upvotes: number | null
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          downvotes?: number | null
+          id?: string
+          is_hidden?: boolean | null
+          is_verified_holder?: boolean | null
+          ticker: string
+          updated_at?: string
+          upvotes?: number | null
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          downvotes?: number | null
+          id?: string
+          is_hidden?: boolean | null
+          is_verified_holder?: boolean | null
+          ticker?: string
+          updated_at?: string
+          upvotes?: number | null
+          user_id?: string
         }
         Relationships: []
       }

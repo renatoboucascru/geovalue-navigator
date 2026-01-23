@@ -10,7 +10,8 @@ import {
   Bell,
   User,
   LogOut,
-  ChevronRight
+  ChevronRight,
+  LineChart
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/hooks/useAuth';
@@ -36,6 +37,7 @@ const navItems = [
 
 const sidebarNavItems = [
   ...navItems,
+  { path: '/paper-trading', label: 'Paper Trading', icon: LineChart },
   { path: '/settings', label: 'Settings', icon: Settings },
 ];
 

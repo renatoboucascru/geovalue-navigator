@@ -6,6 +6,7 @@ import { useScreenerStore } from '@/store/screenerStore';
 import { SectorChip } from './SectorChip';
 import { SECTORS } from '@/data/seedStocks';
 import { RiskProfile, StockType, ValueChainLayer } from '@/types/stock';
+import { TraderModeFilters, TraderFilters, defaultTraderFilters } from './TraderModeFilters';
 
 const riskProfiles: { value: RiskProfile; label: string; icon: React.ElementType; description: string }[] = [
   { value: 'conservative', label: 'Conservative', icon: Shield, description: 'Lower risk, stable returns' },
@@ -52,6 +53,8 @@ export const InputScreen: React.FC = () => {
   } = useScreenerStore();
   
   const [showAdvanced, setShowAdvanced] = useState(false);
+  const [traderModeEnabled, setTraderModeEnabled] = useState(false);
+  const [traderFilters, setTraderFilters] = useState<TraderFilters>(defaultTraderFilters);
   
   const isValid = investmentAmount >= 100 && (filters.sectors.length > 0 || filters.includeIranGulf);
   
@@ -202,7 +205,21 @@ export const InputScreen: React.FC = () => {
                 className="w-5 h-5 bg-card rounded-full shadow"
               />
             </div>
-          </button>
+        </button>
+        </motion.section>
+        
+        {/* Trader Mode Filters */}
+        <motion.section
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.45 }}
+        >
+          <TraderModeFilters
+            enabled={traderModeEnabled}
+            onToggle={setTraderModeEnabled}
+            filters={traderFilters}
+            onFilterChange={setTraderFilters}
+          />
         </motion.section>
         
         {/* Advanced Filters */}

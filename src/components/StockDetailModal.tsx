@@ -1,11 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, ExternalLink, TrendingUp, TrendingDown, AlertTriangle, Shield } from 'lucide-react';
+import { X, ExternalLink, TrendingUp, TrendingDown, AlertTriangle, Shield, Newspaper, ChevronDown } from 'lucide-react';
 import { Stock } from '@/types/stock';
 import { ValuationBadge } from './ValuationBadge';
 import { ScoreRing } from './ScoreRing';
 import { cn } from '@/lib/utils';
 import { supplierMappings } from '@/data/seedStocks';
+import { NewsSentimentPanel } from './NewsSentimentPanel';
 
 interface StockDetailModalProps {
   stock: Stock | null;
@@ -26,6 +27,8 @@ function formatNumber(value: number | null, suffix = ''): string {
 }
 
 export const StockDetailModal: React.FC<StockDetailModalProps> = ({ stock, onClose }) => {
+  const [showNewsSentiment, setShowNewsSentiment] = useState(false);
+  
   if (!stock) return null;
   
   const isPositive = stock.priceChangePercent !== null && stock.priceChangePercent >= 0;
@@ -313,6 +316,36 @@ export const StockDetailModal: React.FC<StockDetailModalProps> = ({ stock, onClo
                     View Evidence
                   </a>
                 )}
+                
+                {/* News & Sentiment Section */}
+                <div>
+                  <button
+                    onClick={() => setShowNewsSentiment(!showNewsSentiment)}
+                    className="w-full flex items-center justify-between p-4 bg-secondary/50 rounded-xl hover:bg-secondary/70 transition-colors"
+                  >
+                    <div className="flex items-center gap-3">
+                      <Newspaper className="h-5 w-5 text-primary" />
+                      <div className="text-left">
+                        <span className="font-medium text-foreground">News & Sentiment</span>
+                        <p className="text-xs text-muted-foreground">AI-powered analysis & community discussion</p>
+                      </div>
+                    </div>
+                    <ChevronDown className={cn('h-5 w-5 text-muted-foreground transition-transform', showNewsSentiment && 'rotate-180')} />
+                  </button>
+                  
+                  <AnimatePresence>
+                    {showNewsSentiment && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        className="overflow-hidden mt-3"
+                      >
+                        <NewsSentimentPanel ticker={stock.ticker} />
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
                 
                 {/* Last Updated */}
                 <div className="pt-4 border-t border-border">
